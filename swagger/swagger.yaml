@@ -1,0 +1,193 @@
+openapi: 3.0.3
+info:
+  title: 3D Model Publishing API
+  description: "API для публикации и управления 3D моделями для печати, а также уп\
+    равления пользователями и аутентификации."
+  version: 1.1.0
+servers:
+- url: http://localhost:8080
+  description: Локальный сервер
+paths:
+  /models:
+    get:
+      summary: Получить список всех моделей
+      operationId: models_get
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: Добавить новую модель
+      operationId: models_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Model'
+        required: true
+      responses:
+        "201":
+          description: Модель успешно добавлена
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /models/{modelId}:
+    get:
+      summary: Получить информацию о модели
+      operationId: models_model_id_get
+      parameters:
+      - name: modelId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+        "404":
+          description: Модель не найдена
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    put:
+      summary: Обновить информацию о модели
+      operationId: models_model_id_put
+      parameters:
+      - name: modelId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Model'
+        required: true
+      responses:
+        "200":
+          description: Модель успешно обновлена
+        "404":
+          description: Модель не найдена
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    delete:
+      summary: Удалить модель
+      operationId: models_model_id_delete
+      parameters:
+      - name: modelId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Модель успешно удалена
+        "404":
+          description: Модель не найдена
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /users:
+    post:
+      summary: Зарегистрировать нового пользователя
+      operationId: users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "201":
+          description: Пользователь успешно зарегистрирован
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /users/login:
+    post:
+      summary: Войти в систему
+      operationId: users_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        "200":
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        "401":
+          description: Неверные учетные данные
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Model:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор модели
+        name:
+          type: string
+          description: Название модели
+        description:
+          type: string
+          description: Описание модели
+        file_url:
+          type: string
+          description: URL файла модели
+      example:
+        file_url: file_url
+        name: name
+        description: description
+        id: id
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор пользователя
+        username:
+          type: string
+          description: Имя пользователя
+        email:
+          type: string
+          description: Электронная почта пользователя
+        password:
+          type: string
+          description: Пароль пользователя
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Имя пользователя
+        password:
+          type: string
+          description: Пароль пользователя
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Токен доступа
+        token_type:
+          type: string
+          description: "Тип токена (например, Bearer)"
+      example:
+        access_token: access_token
+        token_type: token_type
+
